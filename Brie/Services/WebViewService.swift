@@ -14,6 +14,7 @@ class WebViewService: NSObject, ObservableObject {
     nonisolated(unsafe) weak var webView: WKWebView?
     nonisolated(unsafe) private var observations = Set<AnyCancellable>()
     var onLinkClick: ((URL) -> Void)?
+    var onCommandClick: ((URL) -> Void)?
     
     func configure(webView: WKWebView) {
         self.webView = webView
@@ -129,7 +130,13 @@ extension WebViewService: WKNavigationDelegate {
         
         if navigationAction.navigationType == .linkActivated,
            let url = navigationAction.request.url {
-            onLinkClick?(url)
+            if navigationAction.modifierFlags.contains(.command) {
+                onCommandClick?(url)
+                decisionHandler(.cancel)
+                return
+            } else {
+                onLinkClick?(url)
+            }
         }
         
         decisionHandler(.allow)

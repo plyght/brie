@@ -111,20 +111,6 @@ struct FloatingOmniboxView: View {
     }
 }
 
-struct SearchResult: Identifiable {
-    let id = UUID()
-    let title: String
-    let url: String
-    let icon: String
-    let type: ResultType
-    
-    enum ResultType {
-        case url
-        case searchSuggestion
-        case history
-    }
-}
-
 struct SearchResultRow: View {
     let result: SearchResult
     let action: () -> Void

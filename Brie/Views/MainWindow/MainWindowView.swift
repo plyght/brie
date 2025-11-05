@@ -4,10 +4,12 @@ import CoreData
 struct MainWindowView: View {
     @StateObject private var trailManager = TrailManager.shared
     @StateObject private var webViewService = WebViewService()
+    @StateObject private var searchEngineService = SearchEngineService.shared
     @State private var selectedTrail: Trail?
     @State private var selectedPage: Page?
     @State private var isSidebarCollapsed = false
     @State private var currentURL: URL?
+    @FocusState private var isOmniboxFocused: Bool
     
     var body: some View {
         HSplitView {
@@ -19,12 +21,19 @@ struct MainWindowView: View {
             )
             .frame(minWidth: isSidebarCollapsed ? 0 : 200, idealWidth: 250, maxWidth: 400)
             
-            VStack(spacing: 0) {
-                BrowserAddressBar(webViewService: webViewService)
-                
-                Divider()
-                
-                BrowserView(webViewService: webViewService, initialURL: currentURL)
+            ZStack(alignment: .top) {
+                VStack(spacing: 0) {
+                    HStack(spacing: 8) {
+                        BrowserToolbar(webViewService: webViewService)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    
+                    Divider()
+                    
+                    BrowserView(webViewService: webViewService, initialURL: currentURL)
                     .onChange(of: selectedPage) { _, newPage in
                         if let url = newPage?.url {
                             webViewService.load(url: url)
@@ -45,7 +54,23 @@ struct MainWindowView: View {
                             trailManager.updatePage(page, title: title)
                         }
                     }
+                }
+                
+                VStack {
+                    FloatingOmniboxView(
+                        webViewService: webViewService,
+                        searchEngineService: searchEngineService,
+                        isFocused: $isOmniboxFocused
+                    )
+                    .padding(.top, 80)
+                    .padding(.horizontal, 40)
+                    
+                    Spacer()
+                }
             }
+        }
+        .onKeyPress(KeyEquivalent("l"), modifiers: .command) {
+            isOmniboxFocused = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
             withAnimation {
@@ -69,6 +94,11 @@ struct MainWindowView: View {
                 DispatchQueue.main.async {
                     self.selectedPage = newPage
                 }
+            }
+            
+            webViewService.onCommandClick = { [trailManager] url in
+                guard let trail = self.selectedTrail else { return }
+                _ = trailManager.createPage(trail: trail, url: url, title: url.absoluteString)
             }
             
             if trailManager.trails.isEmpty {
