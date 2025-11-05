@@ -190,7 +190,8 @@ struct FolderGroupView: View {
                 }
                 .buttonStyle(.plain)
                 
-                Text(folder.icon ?? "📁")
+                IconView(iconName: folder.icon ?? "folder")
+                    .frame(width: 16, height: 16)
                 Text(folder.name ?? "Untitled Folder")
                     .font(.headline)
                 
