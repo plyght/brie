@@ -54,8 +54,13 @@ struct FloatingOmniboxView: View {
             .padding(.vertical, 12)
             .background(.ultraThinMaterial)
             .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 8)
-            .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.2), radius: 24, x: 0, y: 10)
+            .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
             
             if showingResults && !searchResults.isEmpty {
                 VStack(spacing: 0) {
@@ -67,7 +72,12 @@ struct FloatingOmniboxView: View {
                 }
                 .background(.ultraThinMaterial)
                 .cornerRadius(12)
-                .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                )
+                .shadow(color: Color.black.opacity(0.2), radius: 24, x: 0, y: 10)
+                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
                 .padding(.top, 8)
             }
         }

@@ -16,7 +16,7 @@ struct BrieApp: App {
                 Button("New Trail") {
                     NotificationCenter.default.post(name: .createNewTrail, object: nil)
                 }
-                .keyboardShortcut("t", modifiers: .command)
+                .keyboardShortcut("n", modifiers: .command)
                 
                 Button("New SubTrail") {
                     NotificationCenter.default.post(name: .createNewSubTrail, object: nil)

@@ -51,7 +51,7 @@ struct SidebarView: View {
             }
         }
         .frame(minWidth: 200, maxWidth: isCollapsed ? 0 : .infinity)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(.thinMaterial)
         .onReceive(NotificationCenter.default.publisher(for: .createNewTrail)) { _ in
             trailManager.createTrail()
         }
@@ -132,7 +132,7 @@ struct AreaGroupView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             HStack {
                 Button(action: { isExpanded.toggle() }) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
@@ -148,8 +148,12 @@ struct AreaGroupView: View {
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 8)
-            .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(4)
+            .background(.ultraThinMaterial)
+            .cornerRadius(6)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+            )
             
             if isExpanded {
                 ForEach(sortedTrails, id: \.objectID) { trail in
@@ -182,7 +186,7 @@ struct FolderGroupView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             HStack {
                 Button(action: { isExpanded.toggle() }) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
@@ -199,8 +203,12 @@ struct FolderGroupView: View {
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 8)
-            .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(4)
+            .background(.ultraThinMaterial)
+            .cornerRadius(6)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+            )
             
             if isExpanded {
                 ForEach(sortedTrails, id: \.objectID) { trail in

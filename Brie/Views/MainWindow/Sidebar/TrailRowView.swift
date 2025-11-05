@@ -36,12 +36,13 @@ struct TrailRowView: View {
                     .frame(width: 16)
             }
             
-            Text(trail.icon ?? "📁")
-                .font(.body)
+            IconView(iconName: trail.icon ?? "folder.fill")
+                .frame(width: 16, height: 16)
             
             Text(trail.name ?? "Untitled")
-                .font(.body)
+                .font(.system(size: 13, weight: isSelected ? .medium : .regular))
                 .lineLimit(1)
+                .foregroundColor(.primary)
             
             if hasNote {
                 Image(systemName: "note.text")
@@ -52,7 +53,7 @@ struct TrailRowView: View {
             Spacer()
             
             if isHovered {
-                HStack(spacing: 4) {
+                HStack(spacing: 6) {
                     if hasNote {
                         Button(action: {
                             showingNoteEditor = true
@@ -90,13 +91,23 @@ struct TrailRowView: View {
                 .foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
         .padding(.horizontal, 8)
-        .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
-        .cornerRadius(4)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isSelected ? Color.accentColor.opacity(0.2) : 
+                      (isHovered ? Color.primary.opacity(0.05) : Color.clear))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(isSelected ? Color.accentColor.opacity(0.4) : Color.clear, lineWidth: 1)
+        )
         .onHover { hovering in
-            isHovered = hovering
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
         .contentShape(Rectangle())
         .onTapGesture {
             selectedTrail = trail
@@ -131,7 +142,7 @@ struct TrailRowView: View {
         }
         .sheet(isPresented: $showingIconPicker) {
             IconPickerView(selectedIcon: Binding(
-                get: { trail.icon ?? "📁" },
+                get: { trail.icon ?? "folder.fill" },
                 set: { newIcon in
                     trailManager.updateTrail(trail, icon: newIcon)
                 }
@@ -202,12 +213,14 @@ struct PageRowView: View {
             Spacer()
                 .frame(width: 16)
             
-            Text(page.icon ?? "🌐")
+            IconView(iconName: page.icon ?? "link")
+                .frame(width: 14, height: 14)
                 .font(.caption)
             
             Text(page.title ?? "Untitled Page")
-                .font(.caption)
+                .font(.system(size: 12))
                 .lineLimit(1)
+                .foregroundColor(isSelected ? .primary : .secondary)
             
             Spacer()
             
@@ -222,14 +235,24 @@ struct PageRowView: View {
                 .foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 4)
         .padding(.leading, 24)
         .padding(.trailing, 8)
-        .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
-        .cornerRadius(4)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(isSelected ? Color.accentColor.opacity(0.18) : 
+                      (isHovered ? Color.primary.opacity(0.04) : Color.clear))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 5)
+                .stroke(isSelected ? Color.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
         .onHover { hovering in
-            isHovered = hovering
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
         }
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
         .contentShape(Rectangle())
         .onTapGesture {
             selectedPage = page

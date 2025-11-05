@@ -36,7 +36,7 @@ class KeyboardShortcutsService: ObservableObject {
     
     private func loadDefaultShortcuts() {
         shortcuts = [
-            "newTrail": KeyboardShortcut(action: "newTrail", key: "t", modifiers: ["command"]),
+            "newTrail": KeyboardShortcut(action: "newTrail", key: "n", modifiers: ["command"]),
             "newSubTrail": KeyboardShortcut(action: "newSubTrail", key: "t", modifiers: ["command", "option"]),
             "newSideTrail": KeyboardShortcut(action: "newSideTrail", key: "t", modifiers: ["command", "option", "shift"]),
             "closeTrail": KeyboardShortcut(action: "closeTrail", key: "w", modifiers: ["command"]),

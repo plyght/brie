@@ -11,6 +11,7 @@
 		AppDelegate /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AppDelegateFile; };
 		CoreDataStack /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CoreDataStackFile; };
 		TrailManager /* TrailManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = TrailManagerFile; };
+		AuthenticationService /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AuthenticationServiceFile; };
 		KeyboardShortcutsService /* KeyboardShortcutsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = KeyboardShortcutsServiceFile; };
 		PersistenceService /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PersistenceServiceFile; };
 		SearchEngineService /* SearchEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SearchEngineServiceFile; };
@@ -19,6 +20,7 @@
 		BrowserAddressBar /* BrowserAddressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserAddressBarFile; };
 		BrowserToolbar /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserToolbarFile; };
 		BrowserView /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserViewFile; };
+		FloatingOmniboxView /* FloatingOmniboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FloatingOmniboxViewFile; };
 		SidebarView /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarViewFile; };
 		SidebarHeaderView /* SidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarHeaderViewFile; };
 		SidebarToggleButton /* SidebarToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarToggleButtonFile; };
@@ -29,6 +31,7 @@
 		TrailEditorView /* TrailEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TrailEditorViewFile; };
 		Constants /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ConstantsFile; };
 		Helpers /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HelpersFile; };
+		IconView /* IconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IconViewFile; };
 		NSViewWebKit /* NSView+WebKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = NSViewWebKitFile; };
 		ViewKeyboardShortcuts /* View+KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = ViewKeyboardShortcutsFile; };
 		Assets /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AssetsRef; };
@@ -44,6 +47,7 @@
 		BrieModel /* Brie.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Brie.xcdatamodel; sourceTree = "<group>"; };
 		CoreDataStackFile /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		TrailManagerFile /* TrailManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailManager.swift; sourceTree = "<group>"; };
+		AuthenticationServiceFile /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsService.swift; sourceTree = "<group>"; };
 		PersistenceServiceFile /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
 		SearchEngineServiceFile /* SearchEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineService.swift; sourceTree = "<group>"; };
@@ -52,6 +56,7 @@
 		BrowserAddressBarFile /* BrowserAddressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserAddressBar.swift; sourceTree = "<group>"; };
 		BrowserToolbarFile /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		BrowserViewFile /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		FloatingOmniboxViewFile /* FloatingOmniboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingOmniboxView.swift; sourceTree = "<group>"; };
 		SidebarViewFile /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		SidebarHeaderViewFile /* SidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarHeaderView.swift; sourceTree = "<group>"; };
 		SidebarToggleButtonFile /* SidebarToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarToggleButton.swift; sourceTree = "<group>"; };
@@ -62,6 +67,7 @@
 		TrailEditorViewFile /* TrailEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailEditorView.swift; sourceTree = "<group>"; };
 		ConstantsFile /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		HelpersFile /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		IconViewFile /* IconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconView.swift; sourceTree = "<group>"; };
 		NSViewWebKitFile /* NSView+WebKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+WebKit.swift"; sourceTree = "<group>"; };
 		ViewKeyboardShortcutsFile /* View+KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+KeyboardShortcuts.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -148,6 +154,7 @@
 				BrowserAddressBarFile /* BrowserAddressBar.swift */,
 				BrowserToolbarFile /* BrowserToolbar.swift */,
 				BrowserViewFile /* BrowserView.swift */,
+				FloatingOmniboxViewFile /* FloatingOmniboxView.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -184,6 +191,7 @@
 		ServicesGroup /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AuthenticationServiceFile /* AuthenticationService.swift */,
 				KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */,
 				PersistenceServiceFile /* PersistenceService.swift */,
 				SearchEngineServiceFile /* SearchEngineService.swift */,
@@ -197,6 +205,7 @@
 			children = (
 				ConstantsFile /* Constants.swift */,
 				HelpersFile /* Helpers.swift */,
+				IconViewFile /* IconView.swift */,
 				ExtensionsGroup /* Extensions */,
 			);
 			path = Utilities;
@@ -293,6 +302,7 @@
 				AppDelegate,
 				CoreDataStack,
 				TrailManager,
+				AuthenticationService,
 				KeyboardShortcutsService,
 				PersistenceService,
 				SearchEngineService,
@@ -301,6 +311,7 @@
 				BrowserAddressBar,
 				BrowserToolbar,
 				BrowserView,
+				FloatingOmniboxView,
 				SidebarView,
 				SidebarHeaderView,
 				SidebarToggleButton,
@@ -311,6 +322,7 @@
 				TrailEditorView,
 				Constants,
 				Helpers,
+				IconView,
 				NSViewWebKit,
 				ViewKeyboardShortcuts,
 				BrieModelBuild,

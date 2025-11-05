@@ -9,6 +9,8 @@ struct MainWindowView: View {
     @State private var selectedPage: Page?
     @State private var isSidebarCollapsed = false
     @State private var currentURL: URL?
+    @State private var addressText: String = ""
+    @State private var showOmnibox: Bool = false
     @FocusState private var isOmniboxFocused: Bool
     
     var body: some View {
@@ -19,20 +21,10 @@ struct MainWindowView: View {
                 selectedPage: $selectedPage,
                 isCollapsed: $isSidebarCollapsed
             )
-            .frame(minWidth: isSidebarCollapsed ? 0 : 200, idealWidth: 250, maxWidth: 400)
+            .frame(minWidth: isSidebarCollapsed ? 0 : 160, idealWidth: 180, maxWidth: 400)
             
             ZStack(alignment: .top) {
                 VStack(spacing: 0) {
-                    HStack(spacing: 8) {
-                        BrowserToolbar(webViewService: webViewService)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    
-                    Divider()
-                    
                     BrowserView(webViewService: webViewService, initialURL: currentURL)
                     .onChange(of: selectedPage) { _, newPage in
                         if let url = newPage?.url {
@@ -64,16 +56,81 @@ struct MainWindowView: View {
                     )
                     .padding(.top, 80)
                     .padding(.horizontal, 40)
+                    .opacity(showOmnibox ? 1 : 0)
+                    .allowsHitTesting(showOmnibox)
+                    .animation(.easeInOut(duration: 0.2), value: showOmnibox)
+                    .onChange(of: isOmniboxFocused) { _, focused in
+                        if !focused && showOmnibox {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                showOmnibox = false
+                            }
+                        }
+                    }
                     
                     Spacer()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    HStack(spacing: 8) {
+                        Button(action: { webViewService.goBack() }) {
+                            Image(systemName: "chevron.left")
+                        }
+                        .disabled(!webViewService.canGoBack)
+                        .buttonStyle(.borderless)
+                        
+                        Button(action: { webViewService.goForward() }) {
+                            Image(systemName: "chevron.right")
+                        }
+                        .disabled(!webViewService.canGoForward)
+                        .buttonStyle(.borderless)
+                        
+                        Button(action: {
+                            if webViewService.isLoading {
+                                webViewService.stop()
+                            } else {
+                                webViewService.reload()
+                            }
+                        }) {
+                            Image(systemName: webViewService.isLoading ? "xmark" : "arrow.clockwise")
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+                
+                ToolbarItem(placement: .principal) {
+                    HStack(spacing: 8) {
+                        if let url = webViewService.currentURL {
+                            Image(systemName: url.scheme == "https" ? "lock.fill" : "lock.open.fill")
+                                .font(.caption)
+                                .foregroundColor(url.scheme == "https" ? .green : .gray)
+                        }
+                        
+                        TextField("Search or enter address", text: $addressText)
+                            .textFieldStyle(.plain)
+                            .onSubmit {
+                                webViewService.load(urlString: addressText)
+                            }
+                            .onChange(of: webViewService.currentURL) { _, newURL in
+                                if let url = newURL {
+                                    addressText = url.absoluteString
+                                }
+                            }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(6)
+                    .frame(maxWidth: 600)
+                }
+            }
         }
-        .onKeyPress(KeyEquivalent("l"), modifiers: .command) {
+        .onKeyPress(KeyEquivalent("t"), modifiers: .command) {
+            showOmnibox = true
             isOmniboxFocused = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
-            withAnimation {
+            withAnimation(.easeInOut(duration: 0.25)) {
                 isSidebarCollapsed.toggle()
             }
         }
@@ -107,7 +164,12 @@ struct MainWindowView: View {
                 if let url = URL(string: "https://www.google.com") {
                     currentURL = url
                     webViewService.load(url: url)
+                    addressText = url.absoluteString
                 }
+            }
+            
+            if let url = webViewService.currentURL {
+                addressText = url.absoluteString
             }
         }
     }

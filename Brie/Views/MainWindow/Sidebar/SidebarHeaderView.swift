@@ -39,7 +39,13 @@ struct SidebarHeaderView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background(.ultraThinMaterial)
+        .overlay(
+            Rectangle()
+                .fill(Color.white.opacity(0.1))
+                .frame(height: 0.5),
+            alignment: .bottom
+        )
     }
 }
 

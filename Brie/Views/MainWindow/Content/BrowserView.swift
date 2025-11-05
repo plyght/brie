@@ -14,11 +14,16 @@ struct BrowserView: NSViewRepresentable {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
         
+        let preferences = WKWebpagePreferences()
+        preferences.allowsContentJavaScript = true
+        configuration.defaultWebpagePreferences = preferences
+        
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = true
         webView.allowsMagnification = true
         
         webViewService.configure(webView: webView)
+        webView.uiDelegate = webViewService
         
         if let url = initialURL {
             webView.load(URLRequest(url: url))
