@@ -1,6 +1,20 @@
 import Foundation
 import Combine
 
+struct SearchResult: Identifiable {
+    let id = UUID()
+    let title: String
+    let url: String
+    let icon: String
+    let type: ResultType
+    
+    enum ResultType {
+        case url
+        case searchSuggestion
+        case history
+    }
+}
+
 @MainActor
 class SearchEngineService: ObservableObject {
     static let shared = SearchEngineService()
@@ -36,6 +50,37 @@ class SearchEngineService: ObservableObject {
         }
         
         return searchURL(for: input)
+    }
+    
+    func generateSearchResults(query: String) -> [SearchResult] {
+        var results: [SearchResult] = []
+        
+        if let url = query.toURL() {
+            results.append(SearchResult(
+                title: "Open URL",
+                url: query,
+                icon: "link",
+                type: .url
+            ))
+        }
+        
+        results.append(SearchResult(
+            title: "Search \(currentSearchEngine.name) for \"\(query)\"",
+            url: query,
+            icon: "magnifyingglass",
+            type: .searchSuggestion
+        ))
+        
+        for engine in availableSearchEngines where engine.name != currentSearchEngine.name {
+            results.append(SearchResult(
+                title: "Search \(engine.name) for \"\(query)\"",
+                url: query,
+                icon: "magnifyingglass",
+                type: .searchSuggestion
+            ))
+        }
+        
+        return Array(results.prefix(6))
     }
 }
 
