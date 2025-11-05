@@ -1,0 +1,513 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BrieApp /* BrieApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrieAppFile; };
+		AppDelegate /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AppDelegateFile; };
+		CoreDataStack /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CoreDataStackFile; };
+		TrailManager /* TrailManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = TrailManagerFile; };
+		KeyboardShortcutsService /* KeyboardShortcutsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = KeyboardShortcutsServiceFile; };
+		PersistenceService /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PersistenceServiceFile; };
+		SearchEngineService /* SearchEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SearchEngineServiceFile; };
+		WebViewService /* WebViewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WebViewServiceFile; };
+		MainWindowView /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MainWindowViewFile; };
+		BrowserAddressBar /* BrowserAddressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserAddressBarFile; };
+		BrowserToolbar /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserToolbarFile; };
+		BrowserView /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserViewFile; };
+		SidebarView /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarViewFile; };
+		SidebarHeaderView /* SidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarHeaderViewFile; };
+		SidebarToggleButton /* SidebarToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = SidebarToggleButtonFile; };
+		TrailRowView /* TrailRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TrailRowViewFile; };
+		SettingsView /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SettingsViewFile; };
+		IconPickerView /* IconPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = IconPickerViewFile; };
+		NotesEditorView /* NotesEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NotesEditorViewFile; };
+		TrailEditorView /* TrailEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TrailEditorViewFile; };
+		Constants /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ConstantsFile; };
+		Helpers /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HelpersFile; };
+		NSViewWebKit /* NSView+WebKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = NSViewWebKitFile; };
+		ViewKeyboardShortcuts /* View+KeyboardShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = ViewKeyboardShortcutsFile; };
+		Assets /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AssetsRef; };
+		BrieModelBuild /* Brie.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = BrieModel; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		BrieAppRef /* Brie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Brie.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BrieAppFile /* BrieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrieApp.swift; sourceTree = "<group>"; };
+		AppDelegateFile /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		InfoPlist /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AssetsRef /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BrieModel /* Brie.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Brie.xcdatamodel; sourceTree = "<group>"; };
+		CoreDataStackFile /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		TrailManagerFile /* TrailManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailManager.swift; sourceTree = "<group>"; };
+		KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsService.swift; sourceTree = "<group>"; };
+		PersistenceServiceFile /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
+		SearchEngineServiceFile /* SearchEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineService.swift; sourceTree = "<group>"; };
+		WebViewServiceFile /* WebViewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewService.swift; sourceTree = "<group>"; };
+		MainWindowViewFile /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		BrowserAddressBarFile /* BrowserAddressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserAddressBar.swift; sourceTree = "<group>"; };
+		BrowserToolbarFile /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
+		BrowserViewFile /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		SidebarViewFile /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		SidebarHeaderViewFile /* SidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarHeaderView.swift; sourceTree = "<group>"; };
+		SidebarToggleButtonFile /* SidebarToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarToggleButton.swift; sourceTree = "<group>"; };
+		TrailRowViewFile /* TrailRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailRowView.swift; sourceTree = "<group>"; };
+		SettingsViewFile /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		IconPickerViewFile /* IconPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconPickerView.swift; sourceTree = "<group>"; };
+		NotesEditorViewFile /* NotesEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesEditorView.swift; sourceTree = "<group>"; };
+		TrailEditorViewFile /* TrailEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailEditorView.swift; sourceTree = "<group>"; };
+		ConstantsFile /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		HelpersFile /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		NSViewWebKitFile /* NSView+WebKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSView+WebKit.swift"; sourceTree = "<group>"; };
+		ViewKeyboardShortcutsFile /* View+KeyboardShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+KeyboardShortcuts.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		MainGroup = {
+			isa = PBXGroup;
+			children = (
+				BrieGroup /* Brie */,
+				ProductsGroup /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ProductsGroup /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BrieAppRef /* Brie.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BrieGroup /* Brie */ = {
+			isa = PBXGroup;
+			children = (
+				AppGroup /* App */,
+				CoreGroup /* Core */,
+				ViewsGroup /* Views */,
+				ServicesGroup /* Services */,
+				UtilitiesGroup /* Utilities */,
+				ResourcesGroup /* Resources */,
+			);
+			path = Brie;
+			sourceTree = "<group>";
+		};
+		AppGroup /* App */ = {
+			isa = PBXGroup;
+			children = (
+				BrieAppFile /* BrieApp.swift */,
+				AppDelegateFile /* AppDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		CoreGroup /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				CoreDataStackFile /* CoreDataStack.swift */,
+				TrailManagerFile /* TrailManager.swift */,
+				ModelsGroup /* Models */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		ModelsGroup /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		ViewsGroup /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				MainWindowGroup /* MainWindow */,
+				SettingsGroup /* Settings */,
+				TrailManagementGroup /* TrailManagement */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		MainWindowGroup /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				MainWindowViewFile /* MainWindowView.swift */,
+				ContentGroup /* Content */,
+				SidebarGroup /* Sidebar */,
+			);
+			path = MainWindow;
+			sourceTree = "<group>";
+		};
+		ContentGroup /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				BrowserAddressBarFile /* BrowserAddressBar.swift */,
+				BrowserToolbarFile /* BrowserToolbar.swift */,
+				BrowserViewFile /* BrowserView.swift */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
+		SidebarGroup /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				SidebarViewFile /* SidebarView.swift */,
+				SidebarHeaderViewFile /* SidebarHeaderView.swift */,
+				SidebarToggleButtonFile /* SidebarToggleButton.swift */,
+				TrailRowViewFile /* TrailRowView.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		SettingsGroup /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				SettingsViewFile /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		TrailManagementGroup /* TrailManagement */ = {
+			isa = PBXGroup;
+			children = (
+				IconPickerViewFile /* IconPickerView.swift */,
+				NotesEditorViewFile /* NotesEditorView.swift */,
+				TrailEditorViewFile /* TrailEditorView.swift */,
+			);
+			path = TrailManagement;
+			sourceTree = "<group>";
+		};
+		ServicesGroup /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */,
+				PersistenceServiceFile /* PersistenceService.swift */,
+				SearchEngineServiceFile /* SearchEngineService.swift */,
+				WebViewServiceFile /* WebViewService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		UtilitiesGroup /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				ConstantsFile /* Constants.swift */,
+				HelpersFile /* Helpers.swift */,
+				ExtensionsGroup /* Extensions */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		ExtensionsGroup /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				NSViewWebKitFile /* NSView+WebKit.swift */,
+				ViewKeyboardShortcutsFile /* View+KeyboardShortcuts.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		ResourcesGroup /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				InfoPlist /* Info.plist */,
+				AssetsRef /* Assets.xcassets */,
+				BrieModelGroup /* Brie.xcdatamodeld */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BrieTarget /* Brie */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BrieBuildConfigList;
+			buildPhases = (
+				SourcesBuildPhase,
+				ResourcesBuildPhase,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Brie;
+			productName = Brie;
+			productReference = BrieAppRef;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ProjectObject /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1700;
+				LastUpgradeCheck = 1700;
+				TargetAttributes = {
+					BrieTarget = {
+						CreatedOnToolsVersion = 17.0;
+					};
+				};
+			};
+			buildConfigurationList = ProjectBuildConfigList;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = MainGroup;
+			productRefGroup = ProductsGroup;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				BrieTarget,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ResourcesBuildPhase /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				Assets,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		SourcesBuildPhase /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BrieApp,
+				AppDelegate,
+				CoreDataStack,
+				TrailManager,
+				KeyboardShortcutsService,
+				PersistenceService,
+				SearchEngineService,
+				WebViewService,
+				MainWindowView,
+				BrowserAddressBar,
+				BrowserToolbar,
+				BrowserView,
+				SidebarView,
+				SidebarHeaderView,
+				SidebarToggleButton,
+				TrailRowView,
+				SettingsView,
+				IconPickerView,
+				NotesEditorView,
+				TrailEditorView,
+				Constants,
+				Helpers,
+				NSViewWebKit,
+				ViewKeyboardShortcuts,
+				BrieModelBuild,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DebugConfig /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Brie/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025. All rights reserved.";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brie.browser;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		ReleaseConfig /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Brie/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025. All rights reserved.";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.brie.browser;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ProjectBuildConfigList /* Build configuration list for PBXProject "Brie" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DebugConfig,
+				ReleaseConfig,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BrieBuildConfigList /* Build configuration list for PBXNativeTarget "Brie" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DebugConfig,
+				ReleaseConfig,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BrieModelGroup /* Brie.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BrieModel,
+			);
+			currentVersion = BrieModel;
+			path = Brie.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = ProjectObject;
+}
