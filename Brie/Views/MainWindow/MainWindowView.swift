@@ -13,6 +13,7 @@ struct MainWindowView: View {
     @State private var searchText: String = ""
     @FocusState private var isOmniboxFocused: Bool
     @FocusState private var isSearchFocused: Bool
+    @AppStorage("abbreviateURLs") private var abbreviateURLs = true
     
     var body: some View {
         NavigationSplitView(columnVisibility: $sidebarVisibility) {
@@ -111,20 +112,72 @@ struct MainWindowView: View {
                 }
                 
                 ToolbarItem(placement: .principal) {
-                    TextField("Search or enter address", text: $searchText)
-                        .textFieldStyle(.plain)
-                        .focused($isSearchFocused)
-                        .onSubmit {
-                            webViewService.load(urlString: searchText)
+                    HStack(spacing: 6) {
+                        if let url = webViewService.currentURL {
+                            Image(systemName: url.scheme == "https" ? "lock.fill" : "lock.open.fill")
+                                .font(.system(size: 11))
+                                .foregroundColor(url.scheme == "https" ? .green : .secondary)
+                        } else {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .frame(minWidth: 400, maxWidth: .infinity)
+                        
+                        TextField("Search or enter address", text: $searchText)
+                            .textFieldStyle(.plain)
+                            .focused($isSearchFocused)
+                            .multilineTextAlignment(isSearchFocused ? .leading : .center)
+                            .onSubmit {
+                                webViewService.load(urlString: searchText)
+                                isSearchFocused = false
+                            }
+                        
+                        if !searchText.isEmpty && isSearchFocused {
+                            Button(action: {
+                                searchText = ""
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Clear")
+                        } else {
+                            Color.clear.frame(width: 12)
+                        }
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .frame(minWidth: 400, maxWidth: .infinity)
                 }
             }
             .onChange(of: webViewService.currentURL) { _, newURL in
                 if let url = newURL, !isSearchFocused {
+                    if abbreviateURLs {
+                        searchText = url.abbreviated()
+                    } else {
+                        searchText = url.absoluteString
+                    }
+                }
+            }
+            .onChange(of: isSearchFocused) { _, focused in
+                if focused, let url = webViewService.currentURL {
                     searchText = url.absoluteString
+                } else if !focused, let url = webViewService.currentURL {
+                    if abbreviateURLs {
+                        searchText = url.abbreviated()
+                    } else {
+                        searchText = url.absoluteString
+                    }
+                }
+            }
+            .onChange(of: abbreviateURLs) { _, shouldAbbreviate in
+                if !isSearchFocused, let url = webViewService.currentURL {
+                    if shouldAbbreviate {
+                        searchText = url.abbreviated()
+                    } else {
+                        searchText = url.absoluteString
+                    }
                 }
             }
         }
@@ -168,12 +221,20 @@ struct MainWindowView: View {
                 if let url = URL(string: "https://www.google.com") {
                     currentURL = url
                     webViewService.load(url: url)
-                    searchText = url.absoluteString
+                    if abbreviateURLs {
+                        searchText = url.abbreviated()
+                    } else {
+                        searchText = url.absoluteString
+                    }
                 }
             }
             
             if let url = webViewService.currentURL, searchText.isEmpty {
-                searchText = url.absoluteString
+                if abbreviateURLs {
+                    searchText = url.abbreviated()
+                } else {
+                    searchText = url.absoluteString
+                }
             }
         }
     }
