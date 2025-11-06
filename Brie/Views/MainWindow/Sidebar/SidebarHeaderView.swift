@@ -7,7 +7,7 @@ struct SidebarHeaderView: View {
     var body: some View {
         HStack(spacing: 12) {
             Text("Trails")
-                .font(.headline)
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(.primary)
             
             Spacer()
@@ -27,15 +27,16 @@ struct SidebarHeaderView: View {
                     trailManager.createNote(trail: trail)
                 }
             } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 13))
-                    .foregroundColor(.primary)
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(.accentColor)
+                    .symbolRenderingMode(.hierarchical)
             }
             .menuStyle(.borderlessButton)
-            .frame(width: 20, height: 20)
+            .help("Add New Item")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 }
 

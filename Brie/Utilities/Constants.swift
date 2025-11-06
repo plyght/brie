@@ -31,10 +31,11 @@ struct SearchEngines {
     static let google = SearchEngine(name: "Google", urlTemplate: "https://www.google.com/search?q=%@")
     static let bing = SearchEngine(name: "Bing", urlTemplate: "https://www.bing.com/search?q=%@")
     static let duckDuckGo = SearchEngine(name: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q=%@")
-    static let kagi = SearchEngine(name: "Kagi", urlTemplate: "https://kagi.com/search?q=%@")
     static let brave = SearchEngine(name: "Brave", urlTemplate: "https://search.brave.com/search?q=%@")
+    static let ecosia = SearchEngine(name: "Ecosia", urlTemplate: "https://www.ecosia.org/search?q=%@")
+    static let kagi = SearchEngine(name: "Kagi", urlTemplate: "https://kagi.com/search?q=%@")
     
-    static let all: [SearchEngine] = [google, bing, duckDuckGo, kagi, brave]
+    static let all: [SearchEngine] = [google, brave, ecosia, bing, duckDuckGo, kagi]
 }
 
 struct SearchEngine: Codable, Identifiable, Hashable {

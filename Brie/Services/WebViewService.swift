@@ -149,41 +149,39 @@ extension WebViewService: WKNavigationDelegate {
         }
     }
     
-    @MainActor
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        if navigationAction.targetFrame == nil {
-            webView.load(navigationAction.request)
-        }
-        
-        if navigationAction.navigationType == .linkActivated,
-           let url = navigationAction.request.url {
-            if navigationAction.modifierFlags.contains(.command) {
-                self.onCommandClick?(url)
-                decisionHandler(.cancel, preferences)
-                return
-            } else {
-                self.onLinkClick?(url)
+    nonisolated func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences) async -> (WKNavigationActionPolicy, WKWebpagePreferences) {
+        return await MainActor.run {
+            if navigationAction.targetFrame == nil {
+                webView.load(navigationAction.request)
             }
+            
+            if navigationAction.navigationType == .linkActivated,
+               let url = navigationAction.request.url {
+                if navigationAction.modifierFlags.contains(.command) {
+                    self.onCommandClick?(url)
+                    preferences.allowsContentJavaScript = true
+                    return (.cancel, preferences)
+                } else {
+                    self.onLinkClick?(url)
+                }
+            }
+            
+            preferences.allowsContentJavaScript = true
+            return (.allow, preferences)
         }
-        
-        preferences.allowsContentJavaScript = true
-        decisionHandler(.allow, preferences)
     }
 }
 
 extension WebViewService: WKScriptMessageHandler {
     nonisolated func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        let messageName = message.name
-        let messageBody = message.body
-        
-        guard messageName == "contextMenuHandler",
-              let body = messageBody as? [String: Any],
-              let urlString = body["url"] as? String,
-              let url = URL(string: urlString) else {
-            return
-        }
-        
         Task { @MainActor in
+            guard message.name == "contextMenuHandler",
+                  let body = message.body as? [String: Any],
+                  let urlString = body["url"] as? String,
+                  let url = URL(string: urlString) else {
+                return
+            }
+            
             let menu = NSMenu()
             
             let openInNewTab = NSMenuItem(
@@ -223,48 +221,50 @@ extension WebViewService: WKScriptMessageHandler {
 }
 
 extension WebViewService: WKUIDelegate {
-    @MainActor
-    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
-        let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host
-        alert.informativeText = message
-        alert.addButton(withTitle: "OK")
-        alert.alertStyle = .informational
-        alert.runModal()
-        completionHandler()
+    nonisolated func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo) async {
+        await MainActor.run {
+            let alert = NSAlert()
+            alert.messageText = frame.securityOrigin.host
+            alert.informativeText = message
+            alert.addButton(withTitle: "OK")
+            alert.alertStyle = .informational
+            alert.runModal()
+        }
     }
     
-    @MainActor
-    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
-        let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host
-        alert.informativeText = message
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
-        alert.alertStyle = .informational
-        let response = alert.runModal()
-        completionHandler(response == .alertFirstButtonReturn)
+    nonisolated func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo) async -> Bool {
+        await MainActor.run {
+            let alert = NSAlert()
+            alert.messageText = frame.securityOrigin.host
+            alert.informativeText = message
+            alert.addButton(withTitle: "OK")
+            alert.addButton(withTitle: "Cancel")
+            alert.alertStyle = .informational
+            let response = alert.runModal()
+            return response == .alertFirstButtonReturn
+        }
     }
     
-    @MainActor
-    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
-        let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host
-        alert.informativeText = prompt
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
-        
-        let inputTextField = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
-        inputTextField.stringValue = defaultText ?? ""
-        alert.accessoryView = inputTextField
-        
-        alert.window.initialFirstResponder = inputTextField
-        
-        let response = alert.runModal()
-        if response == .alertFirstButtonReturn {
-            completionHandler(inputTextField.stringValue)
-        } else {
-            completionHandler(nil)
+    nonisolated func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo) async -> String? {
+        await MainActor.run {
+            let alert = NSAlert()
+            alert.messageText = frame.securityOrigin.host
+            alert.informativeText = prompt
+            alert.addButton(withTitle: "OK")
+            alert.addButton(withTitle: "Cancel")
+            
+            let inputTextField = NSTextField(frame: NSRect(x: 0, y: 0, width: 300, height: 24))
+            inputTextField.stringValue = defaultText ?? ""
+            alert.accessoryView = inputTextField
+            
+            alert.window.initialFirstResponder = inputTextField
+            
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                return inputTextField.stringValue
+            } else {
+                return nil
+            }
         }
     }
     

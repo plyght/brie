@@ -5,12 +5,14 @@ struct MainWindowView: View {
     @StateObject private var trailManager = TrailManager.shared
     @StateObject private var webViewService = WebViewService()
     @StateObject private var searchEngineService = SearchEngineService.shared
+    @StateObject private var suggestionsService = SearchSuggestionsService()
     @State private var selectedTrail: Trail?
     @State private var selectedPage: Page?
     @State private var sidebarVisibility: NavigationSplitViewVisibility = .automatic
     @State private var currentURL: URL?
     @State private var showOmnibox: Bool = false
     @State private var searchText: String = ""
+    @State private var showSuggestions: Bool = false
     @FocusState private var isOmniboxFocused: Bool
     @FocusState private var isSearchFocused: Bool
     @AppStorage("abbreviateURLs") private var abbreviateURLs = true
@@ -33,12 +35,15 @@ struct MainWindowView: View {
                         }
                     }
                     .onChange(of: webViewService.currentURL) { _, newURL in
-                        if let url = newURL,
-                           let trail = selectedTrail,
-                           selectedPage == nil {
-                            let page = trailManager.createPage(trail: trail, url: url, title: webViewService.currentTitle)
+                        guard let url = newURL, let trail = selectedTrail else { return }
+                        
+                        if let pages = trail.pages?.array as? [Page],
+                           let existingPage = pages.first(where: { $0.url?.absoluteString == url.absoluteString }) {
+                            selectedPage = existingPage
+                        } else if selectedPage == nil || selectedPage?.url?.absoluteString != url.absoluteString {
+                            let page = trailManager.createPage(trail: trail, url: url, title: webViewService.currentTitle ?? url.absoluteString)
                             selectedPage = page
-                        } else if let page = selectedPage, newURL != nil {
+                        } else if let page = selectedPage, page.url?.absoluteString == url.absoluteString {
                             trailManager.updatePage(page, title: webViewService.currentTitle)
                         }
                     }
@@ -130,6 +135,15 @@ struct MainWindowView: View {
                             .onSubmit {
                                 webViewService.load(urlString: searchText)
                                 isSearchFocused = false
+                                showSuggestions = false
+                            }
+                            .onChange(of: searchText) { _, newValue in
+                                if isSearchFocused && !newValue.isEmpty {
+                                    suggestionsService.fetchSuggestions(for: newValue)
+                                    showSuggestions = true
+                                } else {
+                                    showSuggestions = false
+                                }
                             }
                         
                         if !searchText.isEmpty && isSearchFocused {
@@ -163,12 +177,34 @@ struct MainWindowView: View {
             .onChange(of: isSearchFocused) { _, focused in
                 if focused, let url = webViewService.currentURL {
                     searchText = url.absoluteString
-                } else if !focused, let url = webViewService.currentURL {
-                    if abbreviateURLs {
-                        searchText = url.abbreviated()
-                    } else {
-                        searchText = url.absoluteString
+                    if !searchText.isEmpty {
+                        suggestionsService.fetchSuggestions(for: searchText)
+                        showSuggestions = true
                     }
+                } else {
+                    showSuggestions = false
+                    if let url = webViewService.currentURL {
+                        if abbreviateURLs {
+                            searchText = url.abbreviated()
+                        } else {
+                            searchText = url.absoluteString
+                        }
+                    }
+                }
+            }
+            .overlay(alignment: .top) {
+                if showSuggestions && isSearchFocused && !suggestionsService.suggestions.isEmpty {
+                    SearchSuggestionsDropdown(
+                        suggestions: suggestionsService.suggestions,
+                        searchEngine: searchEngineService.currentSearchEngine,
+                        onSelect: { suggestion in
+                            searchText = suggestion.text
+                            webViewService.load(urlString: suggestion.text)
+                            isSearchFocused = false
+                            showSuggestions = false
+                        }
+                    )
+                    .offset(y: 48)
                 }
             }
             .onChange(of: abbreviateURLs) { _, shouldAbbreviate in
@@ -211,8 +247,13 @@ struct MainWindowView: View {
             }
             
             webViewService.onCommandClick = { [trailManager] url in
-                guard let trail = self.selectedTrail else { return }
-                _ = trailManager.createPage(trail: trail, url: url, title: url.absoluteString)
+                let trailName = url.host ?? url.absoluteString
+                let newTrail = trailManager.createTrail(name: trailName)
+                let newPage = trailManager.createPage(trail: newTrail, url: url, title: url.absoluteString)
+                DispatchQueue.main.async {
+                    self.selectedTrail = newTrail
+                    self.selectedPage = newPage
+                }
             }
             
             if trailManager.trails.isEmpty {
@@ -237,6 +278,59 @@ struct MainWindowView: View {
                 }
             }
         }
+    }
+}
+
+struct SearchSuggestionsDropdown: View {
+    let suggestions: [SearchSuggestion]
+    let searchEngine: SearchEngine
+    let onSelect: (SearchSuggestion) -> Void
+    @State private var hoveredIndex: Int?
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(suggestions.enumerated()), id: \.element.id) { index, suggestion in
+                Button(action: {
+                    onSelect(suggestion)
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: suggestion.type == .url ? "link" : "magnifyingglass")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .frame(width: 16)
+                        
+                        Text(suggestion.text)
+                            .font(.system(size: 13))
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        if suggestion.type == .suggestion {
+                            Text(searchEngine.name)
+                                .font(.system(size: 11))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(hoveredIndex == index ? Color.accentColor.opacity(0.1) : Color.clear)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .onHover { hovering in
+                    hoveredIndex = hovering ? index : nil
+                }
+                
+                if index < suggestions.count - 1 {
+                    Divider()
+                }
+            }
+        }
+        .background(.regularMaterial)
+        .cornerRadius(8)
+        .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+        .frame(minWidth: 400, maxWidth: 500)
+        .padding(.horizontal, 40)
     }
 }
 

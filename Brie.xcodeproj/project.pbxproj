@@ -15,6 +15,7 @@
 		KeyboardShortcutsService /* KeyboardShortcutsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = KeyboardShortcutsServiceFile; };
 		PersistenceService /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PersistenceServiceFile; };
 		SearchEngineService /* SearchEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SearchEngineServiceFile; };
+		SearchSuggestionsService /* SearchSuggestionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SearchSuggestionsServiceFile; };
 		WebViewService /* WebViewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WebViewServiceFile; };
 		MainWindowView /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MainWindowViewFile; };
 		BrowserToolbar /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserToolbarFile; };
@@ -50,6 +51,7 @@
 		KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutsService.swift; sourceTree = "<group>"; };
 		PersistenceServiceFile /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
 		SearchEngineServiceFile /* SearchEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineService.swift; sourceTree = "<group>"; };
+		SearchSuggestionsServiceFile /* SearchSuggestionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSuggestionsService.swift; sourceTree = "<group>"; };
 		WebViewServiceFile /* WebViewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewService.swift; sourceTree = "<group>"; };
 		MainWindowViewFile /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
 		BrowserToolbarFile /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				KeyboardShortcutsServiceFile /* KeyboardShortcutsService.swift */,
 				PersistenceServiceFile /* PersistenceService.swift */,
 				SearchEngineServiceFile /* SearchEngineService.swift */,
+				SearchSuggestionsServiceFile /* SearchSuggestionsService.swift */,
 				WebViewServiceFile /* WebViewService.swift */,
 			);
 			path = Services;
@@ -303,6 +306,7 @@
 				KeyboardShortcutsService,
 				PersistenceService,
 				SearchEngineService,
+				SearchSuggestionsService,
 				WebViewService,
 				MainWindowView,
 				BrowserToolbar,

@@ -3,58 +3,41 @@ import WebKit
 
 struct SettingsView: View {
     @StateObject private var searchEngineService = SearchEngineService.shared
-    @State private var selectedTab: SettingsTab = .general
     @AppStorage("showSidebarOnLaunch") private var showSidebarOnLaunch = true
     @AppStorage("restorePreviousSession") private var restorePreviousSession = true
     
-    enum SettingsTab: String, CaseIterable, Identifiable {
-        case general = "General"
-        case appearance = "Appearance"
-        case extensions = "Extensions"
-        case shortcuts = "Shortcuts"
-        case advanced = "Advanced"
-        
-        var id: String { rawValue }
-        
-        var icon: String {
-            switch self {
-            case .general: return "gearshape"
-            case .appearance: return "paintbrush"
-            case .extensions: return "puzzlepiece.extension"
-            case .shortcuts: return "keyboard"
-            case .advanced: return "slider.horizontal.3"
-            }
-        }
-    }
-    
     var body: some View {
-        NavigationSplitView(sidebar: {
-            List(SettingsTab.allCases, selection: $selectedTab) { tab in
-                Label(tab.rawValue, systemImage: tab.icon)
-                    .tag(tab)
+        TabView {
+            GeneralSettingsView(
+                searchEngineService: searchEngineService,
+                showSidebarOnLaunch: $showSidebarOnLaunch,
+                restorePreviousSession: $restorePreviousSession
+            )
+            .tabItem {
+                Label("General", systemImage: "gearshape")
             }
-            .listStyle(.sidebar)
-            .frame(minWidth: 180)
-        }, detail: {
-            Group {
-                switch selectedTab {
-                case .general:
-                    GeneralSettingsView(searchEngineService: searchEngineService, 
-                                       showSidebarOnLaunch: $showSidebarOnLaunch,
-                                       restorePreviousSession: $restorePreviousSession)
-                case .appearance:
-                    AppearanceSettingsView()
-                case .extensions:
-                    ExtensionsSettingsView()
-                case .shortcuts:
-                    KeyboardShortcutsSettingsView()
-                case .advanced:
-                    AdvancedSettingsView()
+            
+            AppearanceSettingsView()
+                .tabItem {
+                    Label("Appearance", systemImage: "paintbrush")
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        })
-        .frame(width: 750, height: 550)
+            
+            ExtensionsSettingsView()
+                .tabItem {
+                    Label("Extensions", systemImage: "puzzlepiece.extension")
+                }
+            
+            KeyboardShortcutsSettingsView()
+                .tabItem {
+                    Label("Shortcuts", systemImage: "keyboard")
+                }
+            
+            AdvancedSettingsView()
+                .tabItem {
+                    Label("Advanced", systemImage: "slider.horizontal.3")
+                }
+        }
+        .frame(width: 650, height: 500)
     }
 }
 
@@ -62,63 +45,91 @@ struct GeneralSettingsView: View {
     @ObservedObject var searchEngineService: SearchEngineService
     @Binding var showSidebarOnLaunch: Bool
     @Binding var restorePreviousSession: Bool
+    @State private var showingAddEngine = false
+    @State private var editingEngine: SearchEngine?
+    @State private var hoveredEngine: SearchEngine?
     
     var body: some View {
         Form {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("General")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Configure general browser settings and behavior")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+            Section {
+                Picker("Default search engine:", selection: $searchEngineService.currentSearchEngine) {
+                    ForEach(searchEngineService.availableSearchEngines) { engine in
+                        Text(engine.name).tag(engine)
+                    }
                 }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Search Engine")
-                                .font(.headline)
-                            
-                            Picker("Default search engine", selection: $searchEngineService.currentSearchEngine) {
-                                ForEach(searchEngineService.availableSearchEngines) { engine in
-                                    Text(engine.name).tag(engine)
+                .pickerStyle(.menu)
+            } header: {
+                Text("Search Engine")
+                    .font(.headline)
+            }
+            
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Custom Search Engines")
+                            .font(.subheadline)
+                        Spacer()
+                        Button(action: { showingAddEngine = true }) {
+                            Image(systemName: "plus")
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    
+                    if searchEngineService.customSearchEngines.isEmpty {
+                        Text("No custom search engines")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    } else {
+                        ForEach(searchEngineService.customSearchEngines) { engine in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(engine.name)
+                                        .font(.body)
+                                    Text(engine.urlTemplate)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
                                 }
+                                Spacer()
+                                Button(action: { editingEngine = engine }) {
+                                    Image(systemName: "pencil")
+                                }
+                                .buttonStyle(.borderless)
+                                Button(action: { searchEngineService.removeCustomEngine(engine) }) {
+                                    Image(systemName: "trash")
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.red)
                             }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                            
-                            Text("Choose your preferred search engine for address bar queries")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.vertical, 8)
                 }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("On Launch")
-                            .font(.headline)
-                        
-                        Toggle("Show sidebar on launch", isOn: $showSidebarOnLaunch)
-                        
-                        Toggle("Restore previous session", isOn: $restorePreviousSession)
-                        
-                        Text("Automatically restore your trails and pages from your last session")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                Spacer()
             }
-            .padding(24)
+            .sheet(isPresented: $showingAddEngine) {
+                CustomSearchEngineEditor(
+                    searchEngineService: searchEngineService,
+                    engine: nil,
+                    onDismiss: { showingAddEngine = false }
+                )
+            }
+            .sheet(item: $editingEngine) { engine in
+                CustomSearchEngineEditor(
+                    searchEngineService: searchEngineService,
+                    engine: engine,
+                    onDismiss: { editingEngine = nil }
+                )
+            }
+            
+            Section {
+                Toggle("Show sidebar on launch", isOn: $showSidebarOnLaunch)
+                Toggle("Restore previous session", isOn: $restorePreviousSession)
+            } header: {
+                Text("On Launch")
+                    .font(.headline)
+            }
         }
         .formStyle(.grouped)
+        .padding()
     }
 }
 
@@ -127,97 +138,56 @@ struct AppearanceSettingsView: View {
     
     var body: some View {
         Form {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Appearance")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Customize the look and feel of Brie")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Interface")
-                            .font(.headline)
-                        
-                        Toggle("Abbreviate URLs in address bar", isOn: $abbreviateURLs)
-                        
-                        Text("When enabled, long URLs will be shortened to show only the domain and last path segment")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Divider()
-                        
-                        Text("The Brie browser uses your system appearance settings")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        Text("To change the appearance, go to System Settings > Appearance")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                Spacer()
+            Section {
+                Toggle("Abbreviate URLs in address bar", isOn: $abbreviateURLs)
+                Text("When enabled, long URLs will be shortened to show only the domain and last path segment")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Interface")
+                    .font(.headline)
             }
-            .padding(24)
+            
+            Section {
+                Text("Brie uses your system appearance settings. To change the appearance, go to System Settings > Appearance")
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("System Appearance")
+                    .font(.headline)
+            }
         }
         .formStyle(.grouped)
+        .padding()
     }
 }
 
 struct KeyboardShortcutsSettingsView: View {
     var body: some View {
         Form {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Keyboard Shortcuts")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("View and manage keyboard shortcuts for common actions")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Trail Management")
-                            .font(.headline)
-                            .padding(.bottom, 4)
-                        
-                        ShortcutRow(action: "New Trail", shortcut: KeyboardShortcuts.newTrail)
-                        ShortcutRow(action: "New SubTrail", shortcut: KeyboardShortcuts.newSubTrail)
-                        ShortcutRow(action: "New SideTrail", shortcut: KeyboardShortcuts.newSideTrail)
-                        ShortcutRow(action: "Close Trail/Page", shortcut: KeyboardShortcuts.closeTrail)
-                        ShortcutRow(action: "Rename Trail", shortcut: KeyboardShortcuts.renameTrail)
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Navigation")
-                            .font(.headline)
-                            .padding(.bottom, 4)
-                        
-                        ShortcutRow(action: "Toggle Sidebar", shortcut: KeyboardShortcuts.toggleSidebar)
-                        ShortcutRow(action: "Focus Address Bar", shortcut: "⌘L")
-                        ShortcutRow(action: "Collapse Trail", shortcut: KeyboardShortcuts.collapseTrail)
-                        ShortcutRow(action: "Expand Trail", shortcut: KeyboardShortcuts.expandTrail)
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                Spacer()
+            Section {
+                ShortcutRow(action: "New Trail", shortcut: KeyboardShortcuts.newTrail)
+                ShortcutRow(action: "New SubTrail", shortcut: KeyboardShortcuts.newSubTrail)
+                ShortcutRow(action: "New SideTrail", shortcut: KeyboardShortcuts.newSideTrail)
+                ShortcutRow(action: "Close Trail/Page", shortcut: KeyboardShortcuts.closeTrail)
+                ShortcutRow(action: "Rename Trail", shortcut: KeyboardShortcuts.renameTrail)
+            } header: {
+                Text("Trail Management")
+                    .font(.headline)
             }
-            .padding(24)
+            
+            Section {
+                ShortcutRow(action: "Toggle Sidebar", shortcut: KeyboardShortcuts.toggleSidebar)
+                ShortcutRow(action: "Focus Address Bar", shortcut: "⌘L")
+                ShortcutRow(action: "Collapse Trail", shortcut: KeyboardShortcuts.collapseTrail)
+                ShortcutRow(action: "Expand Trail", shortcut: KeyboardShortcuts.expandTrail)
+            } header: {
+                Text("Navigation")
+                    .font(.headline)
+            }
         }
         .formStyle(.grouped)
+        .padding()
     }
 }
 
@@ -228,15 +198,10 @@ struct ShortcutRow: View {
     var body: some View {
         HStack {
             Text(action)
-                .font(.subheadline)
             Spacer()
             Text(shortcut)
                 .font(.system(.body, design: .monospaced))
                 .foregroundColor(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(4)
         }
     }
 }
@@ -247,103 +212,42 @@ struct ExtensionsSettingsView: View {
     
     var body: some View {
         Form {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Extensions")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Manage Safari App Extensions and security settings")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+            Section {
+                Toggle("Enable Safari Extensions", isOn: $extensionsEnabled)
+                Text("Allow Safari App Extensions to interact with web content")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Extension Support")
-                            .font(.headline)
-                        
-                        Toggle("Enable Safari Extensions", isOn: $extensionsEnabled)
-                        
-                        Text("Allow Safari App Extensions to interact with web content")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Divider()
-                        
-                        Button(action: {
-                            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.extensions") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        }) {
-                            Label("Open Safari Extensions Settings", systemImage: "gearshape.2")
-                        }
-                        .buttonStyle(.bordered)
-                        
-                        Text("Configure and enable Brie Extension in Safari settings")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                Button(action: {
+                    if let url = URL(string: "x-apple.systempreferences:com.apple.preference.extensions") {
+                        NSWorkspace.shared.open(url)
                     }
-                    .padding(.vertical, 8)
+                }) {
+                    Label("Open Safari Extensions Settings", systemImage: "gearshape.2")
                 }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Authentication")
-                            .font(.headline)
-                        
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Biometric Authentication")
-                                    .font(.subheadline)
-                                Text(authService.hasBiometrics ? "\(authService.biometricTypeString) available" : "Not available")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: authService.hasBiometrics ? "touchid" : "lock.slash")
-                                .font(.title2)
-                                .foregroundColor(authService.hasBiometrics ? .green : .secondary)
-                        }
-                        
-                        Text("Websites can request biometric authentication for passkeys and WebAuthn")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Installed Extensions")
-                            .font(.headline)
-                        
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Brie Extension")
-                                    .font(.subheadline)
-                                Text("Core browser extension")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Text("Built-in")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.accentColor.opacity(0.1))
-                                .cornerRadius(4)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
-                
-                Spacer()
+                .buttonStyle(.link)
+            } header: {
+                Text("Extension Support")
+                    .font(.headline)
             }
-            .padding(24)
+            
+            Section {
+                HStack {
+                    Text("Biometric Authentication")
+                    Spacer()
+                    Text(authService.hasBiometrics ? "\(authService.biometricTypeString) available" : "Not available")
+                        .foregroundColor(authService.hasBiometrics ? .green : .secondary)
+                }
+                Text("Websites can request biometric authentication for passkeys and WebAuthn")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Authentication")
+                    .font(.headline)
+            }
         }
         .formStyle(.grouped)
+        .padding()
     }
 }
 
@@ -355,81 +259,50 @@ struct AdvancedSettingsView: View {
     
     var body: some View {
         Form {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Advanced")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Manage data, storage, and advanced settings")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Data Management")
-                            .font(.headline)
-                        
-                        Button(action: {
-                            let markdown = TrailManager.shared.exportTrailsToMarkdown()
-                            let panel = NSSavePanel()
-                            panel.allowedContentTypes = [.plainText]
-                            panel.nameFieldStringValue = "trails.md"
-                            panel.begin { response in
-                                if response == .OK, let url = panel.url {
-                                    try? markdown.write(to: url, atomically: true, encoding: .utf8)
-                                }
-                            }
-                        }) {
-                            Label("Export Trails to Markdown", systemImage: "square.and.arrow.up")
+            Section {
+                Button(action: {
+                    let markdown = TrailManager.shared.exportTrailsToMarkdown()
+                    let panel = NSSavePanel()
+                    panel.allowedContentTypes = [.plainText]
+                    panel.nameFieldStringValue = "trails.md"
+                    panel.begin { response in
+                        if response == .OK, let url = panel.url {
+                            try? markdown.write(to: url, atomically: true, encoding: .utf8)
                         }
-                        .buttonStyle(.bordered)
-                        
-                        Text("Export all your trails and pages to a markdown file")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        
-                        Divider()
-                        
-                        Button(role: .destructive, action: {
-                            showingClearDataAlert = true
-                        }) {
-                            Label("Clear All Data", systemImage: "trash")
-                        }
-                        .buttonStyle(.bordered)
-                        
-                        Text("Warning: This will permanently delete all trails, pages, and notes")
-                            .font(.caption)
-                            .foregroundColor(.red.opacity(0.8))
                     }
-                    .padding(.vertical, 8)
+                }) {
+                    Label("Export Trails to Markdown", systemImage: "square.and.arrow.up")
                 }
                 
-                GroupBox {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Storage")
-                            .font(.headline)
-                        
-                        Button(action: {
-                            showingClearCacheAlert = true
-                        }) {
-                            Label("Clear Cache", systemImage: "trash.circle")
-                        }
-                        .buttonStyle(.bordered)
-                        
-                        Text("Clear website data and cache. You may need to log in to websites again")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 8)
+                Button(role: .destructive, action: {
+                    showingClearDataAlert = true
+                }) {
+                    Label("Clear All Data", systemImage: "trash")
                 }
-                
-                Spacer()
+                Text("This will permanently delete all trails, pages, and notes")
+                    .font(.caption)
+                    .foregroundColor(.red)
+            } header: {
+                Text("Data Management")
+                    .font(.headline)
             }
-            .padding(24)
+            
+            Section {
+                Button(action: {
+                    showingClearCacheAlert = true
+                }) {
+                    Label("Clear Cache", systemImage: "trash.circle")
+                }
+                Text("Clear website data and cache. You may need to log in to websites again")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } header: {
+                Text("Storage")
+                    .font(.headline)
+            }
         }
         .formStyle(.grouped)
+        .padding()
         .alert("Clear All Data", isPresented: $showingClearDataAlert) {
             Button("Cancel", role: .cancel) { }
             Button("Clear All Data", role: .destructive) {
@@ -479,3 +352,97 @@ struct AdvancedSettingsView: View {
     }
 }
 
+struct CustomSearchEngineEditor: View {
+    @ObservedObject var searchEngineService: SearchEngineService
+    let engine: SearchEngine?
+    let onDismiss: () -> Void
+    
+    @State private var name: String = ""
+    @State private var urlTemplate: String = ""
+    @State private var showError: Bool = false
+    @State private var errorMessage: String = ""
+    
+    var isEditing: Bool {
+        engine != nil
+    }
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text(isEditing ? "Edit Search Engine" : "Add Custom Search Engine")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Form {
+                TextField("Name:", text: $name)
+                TextField("URL Template:", text: $urlTemplate)
+                Text("Use %@ as a placeholder for the search query. Example: https://www.google.com/search?q=%@")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                
+                if showError {
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            }
+            .formStyle(.grouped)
+            
+            HStack {
+                Button("Cancel") {
+                    onDismiss()
+                }
+                .keyboardShortcut(.escape)
+                
+                Spacer()
+                
+                Button(isEditing ? "Save" : "Add") {
+                    saveEngine()
+                }
+                .keyboardShortcut(.return)
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding()
+        .frame(width: 450, height: 280)
+        .onAppear {
+            if let engine = engine {
+                name = engine.name
+                urlTemplate = engine.urlTemplate
+            }
+        }
+    }
+    
+    private func saveEngine() {
+        guard !name.isEmpty else {
+            errorMessage = "Please enter a name for the search engine."
+            showError = true
+            return
+        }
+        
+        guard !urlTemplate.isEmpty else {
+            errorMessage = "Please enter a URL template."
+            showError = true
+            return
+        }
+        
+        guard urlTemplate.contains("%@") else {
+            errorMessage = "URL template must contain %@ as a placeholder."
+            showError = true
+            return
+        }
+        
+        guard urlTemplate.hasPrefix("http://") || urlTemplate.hasPrefix("https://") else {
+            errorMessage = "URL template must start with http:// or https://"
+            showError = true
+            return
+        }
+        
+        if let engine = engine {
+            searchEngineService.updateCustomEngine(engine, name: name, urlTemplate: urlTemplate)
+        } else {
+            searchEngineService.addCustomEngine(name: name, urlTemplate: urlTemplate)
+        }
+        
+        onDismiss()
+    }
+}

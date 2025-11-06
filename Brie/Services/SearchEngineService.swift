@@ -21,14 +21,18 @@ class SearchEngineService: ObservableObject {
     
     @Published var currentSearchEngine: SearchEngine
     @Published var availableSearchEngines: [SearchEngine]
+    @Published var customSearchEngines: [SearchEngine] = []
     
     private let defaultsKey = "selectedSearchEngineName"
+    private let customEnginesKey = "customSearchEngines"
     
     init() {
-        self.availableSearchEngines = SearchEngines.all
+        let loadedCustomEngines = Self.loadCustomEngines()
+        self.customSearchEngines = loadedCustomEngines
+        self.availableSearchEngines = SearchEngines.all + loadedCustomEngines
         
         if let savedName = UserDefaults.standard.string(forKey: defaultsKey),
-           let engine = SearchEngines.all.first(where: { $0.name == savedName }) {
+           let engine = (SearchEngines.all + loadedCustomEngines).first(where: { $0.name == savedName }) {
             self.currentSearchEngine = engine
         } else {
             self.currentSearchEngine = SearchEngines.google
@@ -38,6 +42,46 @@ class SearchEngineService: ObservableObject {
     func setSearchEngine(_ engine: SearchEngine) {
         currentSearchEngine = engine
         UserDefaults.standard.set(engine.name, forKey: defaultsKey)
+    }
+    
+    func addCustomEngine(name: String, urlTemplate: String) {
+        let engine = SearchEngine(name: name, urlTemplate: urlTemplate)
+        customSearchEngines.append(engine)
+        availableSearchEngines = SearchEngines.all + customSearchEngines
+        saveCustomEngines()
+    }
+    
+    func removeCustomEngine(_ engine: SearchEngine) {
+        customSearchEngines.removeAll { $0.id == engine.id }
+        availableSearchEngines = SearchEngines.all + customSearchEngines
+        saveCustomEngines()
+        
+        if currentSearchEngine.id == engine.id {
+            currentSearchEngine = SearchEngines.google
+            UserDefaults.standard.set(currentSearchEngine.name, forKey: defaultsKey)
+        }
+    }
+    
+    func updateCustomEngine(_ engine: SearchEngine, name: String, urlTemplate: String) {
+        if let index = customSearchEngines.firstIndex(where: { $0.id == engine.id }) {
+            customSearchEngines[index] = SearchEngine(name: name, urlTemplate: urlTemplate)
+            availableSearchEngines = SearchEngines.all + customSearchEngines
+            saveCustomEngines()
+        }
+    }
+    
+    private func saveCustomEngines() {
+        if let encoded = try? JSONEncoder().encode(customSearchEngines) {
+            UserDefaults.standard.set(encoded, forKey: customEnginesKey)
+        }
+    }
+    
+    private static func loadCustomEngines() -> [SearchEngine] {
+        guard let data = UserDefaults.standard.data(forKey: "customSearchEngines"),
+              let engines = try? JSONDecoder().decode([SearchEngine].self, from: data) else {
+            return []
+        }
+        return engines
     }
     
     func searchURL(for query: String) -> URL? {

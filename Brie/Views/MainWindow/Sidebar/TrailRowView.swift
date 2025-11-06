@@ -20,12 +20,12 @@ struct TrailRowView: View {
     }
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             IconView(iconName: trail.icon ?? "folder.fill")
-                .frame(width: 16, height: 16)
+                .frame(width: 20, height: 20)
             
             Text(trail.name ?? "Untitled")
-                .font(.system(size: 13))
+                .font(.system(size: 15, weight: .semibold))
                 .lineLimit(1)
             
             if hasNote {
@@ -33,7 +33,7 @@ struct TrailRowView: View {
                     currentNote = trail.note
                 }) {
                     Image(systemName: "note.text")
-                        .font(.system(size: 11))
+                        .font(.system(size: 13))
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
@@ -42,6 +42,9 @@ struct TrailRowView: View {
             
             Spacer()
         }
+        .padding(.vertical, 2)
+        .background(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
+        .cornerRadius(6)
         .contentShape(Rectangle())
         .onTapGesture {
             selectedTrail = trail
@@ -161,17 +164,21 @@ struct PageRowView: View {
     }
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             IconView(iconName: page.icon ?? "link")
-                .frame(width: 16, height: 16)
+                .frame(width: 18, height: 18)
             
             Text(page.title ?? "Untitled Page")
-                .font(.system(size: 12))
+                .font(.system(size: 14))
                 .lineLimit(1)
                 .foregroundColor(isSelected ? .primary : .secondary)
             
             Spacer()
         }
+        .padding(.leading, 8)
+        .padding(.vertical, 2)
+        .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
+        .cornerRadius(6)
         .contentShape(Rectangle())
         .onTapGesture {
             selectedPage = page

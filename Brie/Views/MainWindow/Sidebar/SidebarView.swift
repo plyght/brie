@@ -134,7 +134,7 @@ struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .searchable(text: $searchText, prompt: "Search trails and pages")
-        .environment(\.defaultMinListRowHeight, 28)
+        .environment(\.defaultMinListRowHeight, 36)
         .onReceive(NotificationCenter.default.publisher(for: .createNewTrail)) { _ in
             trailManager.createTrail()
         }
@@ -250,11 +250,11 @@ struct AreaGroupView: View {
                 )
             }
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 12) {
                 Text(area.icon ?? "📂")
-                    .font(.system(size: 16))
+                    .font(.system(size: 18))
                 Text(area.name ?? "Untitled Area")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
             }
         }
         .listRowBackground(Color.clear)
@@ -288,11 +288,11 @@ struct FolderGroupView: View {
                 )
             }
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: 12) {
                 IconView(iconName: folder.icon ?? "folder")
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
                 Text(folder.name ?? "Untitled Folder")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
             }
         }
         .listRowBackground(Color.clear)
