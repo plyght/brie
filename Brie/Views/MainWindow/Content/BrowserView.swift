@@ -37,7 +37,8 @@ struct BrowserView: NSViewRepresentable {
     
     static func dismantleNSView(_ webView: WKWebView, coordinator: ()) {
         webView.stopLoading()
-        webView.configuration.processPool = WKProcessPool()
+        webView.navigationDelegate = nil
+        webView.uiDelegate = nil
     }
 }
 

@@ -17,25 +17,34 @@ struct TrailEditorView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Text("Edit Trail")
                 .font(.headline)
+                .padding(.top, 8)
             
-            HStack {
+            HStack(spacing: 16) {
                 Button(action: { showingIconPicker.toggle() }) {
-                    Text(selectedIcon)
+                    IconView(iconName: selectedIcon)
                         .font(.system(size: 40))
-                        .frame(width: 60, height: 60)
+                        .frame(width: 80, height: 80)
                         .background(Color(nsColor: .controlBackgroundColor))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                        )
                 }
                 .buttonStyle(.plain)
+                .help("Change Icon")
                 
                 TextField("Trail Name", text: $name)
                     .textFieldStyle(.roundedBorder)
+                    .font(.body)
             }
             
-            HStack {
+            Spacer()
+            
+            HStack(spacing: 12) {
                 Button("Cancel") {
                     dismiss()
                 }
@@ -48,10 +57,11 @@ struct TrailEditorView: View {
                     dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
+                .buttonStyle(.borderedProminent)
             }
         }
-        .padding()
-        .frame(width: 400)
+        .padding(24)
+        .frame(width: 450, height: 250)
         .sheet(isPresented: $showingIconPicker) {
             IconPickerView(selectedIcon: $selectedIcon)
         }

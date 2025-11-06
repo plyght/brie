@@ -30,6 +30,26 @@
     <string>Brie uses Touch ID to authenticate with websites that support passkeys and WebAuthn.</string>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.brie.trail</string>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+            <key>UTTypeDescription</key>
+            <string>Brie Trail</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>brie</string>
+                </array>
+            </dict>
+        </dict>
+    </array>
 </dict>
 </plist>
 

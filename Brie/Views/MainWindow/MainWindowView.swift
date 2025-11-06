@@ -7,22 +7,23 @@ struct MainWindowView: View {
     @StateObject private var searchEngineService = SearchEngineService.shared
     @State private var selectedTrail: Trail?
     @State private var selectedPage: Page?
-    @State private var isSidebarCollapsed = false
+    @State private var sidebarVisibility: NavigationSplitViewVisibility = .automatic
     @State private var currentURL: URL?
     @State private var addressText: String = ""
     @State private var showOmnibox: Bool = false
     @FocusState private var isOmniboxFocused: Bool
+    @FocusState private var isAddressBarFocused: Bool
+    @AppStorage("abbreviateURLs") private var abbreviateURLs = true
     
     var body: some View {
-        HSplitView {
+        NavigationSplitView(columnVisibility: $sidebarVisibility) {
             SidebarView(
                 trailManager: trailManager,
                 selectedTrail: $selectedTrail,
-                selectedPage: $selectedPage,
-                isCollapsed: $isSidebarCollapsed
+                selectedPage: $selectedPage
             )
-            .frame(minWidth: isSidebarCollapsed ? 0 : 160, idealWidth: 180, maxWidth: 400)
-            
+            .navigationSplitViewColumnWidth(min: 200, ideal: 250, max: 400)
+        } detail: {
             ZStack(alignment: .top) {
                 VStack(spacing: 0) {
                     BrowserView(webViewService: webViewService, initialURL: currentURL)
@@ -37,7 +38,7 @@ struct MainWindowView: View {
                            selectedPage == nil {
                             let page = trailManager.createPage(trail: trail, url: url, title: webViewService.currentTitle)
                             selectedPage = page
-                        } else if let page = selectedPage, let url = newURL {
+                        } else if let page = selectedPage, newURL != nil {
                             trailManager.updatePage(page, title: webViewService.currentTitle)
                         }
                     }
@@ -72,18 +73,26 @@ struct MainWindowView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigation) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         Button(action: { webViewService.goBack() }) {
                             Image(systemName: "chevron.left")
+                                .font(.system(size: 13))
+                                .frame(width: 20, height: 20)
                         }
                         .disabled(!webViewService.canGoBack)
                         .buttonStyle(.borderless)
+                        .frame(minWidth: 28, minHeight: 28)
+                        .help("Go Back")
                         
                         Button(action: { webViewService.goForward() }) {
                             Image(systemName: "chevron.right")
+                                .font(.system(size: 13))
+                                .frame(width: 20, height: 20)
                         }
                         .disabled(!webViewService.canGoForward)
                         .buttonStyle(.borderless)
+                        .frame(minWidth: 28, minHeight: 28)
+                        .help("Go Forward")
                         
                         Button(action: {
                             if webViewService.isLoading {
@@ -93,8 +102,12 @@ struct MainWindowView: View {
                             }
                         }) {
                             Image(systemName: webViewService.isLoading ? "xmark" : "arrow.clockwise")
+                                .font(.system(size: 13))
+                                .frame(width: 20, height: 20)
                         }
                         .buttonStyle(.borderless)
+                        .frame(minWidth: 28, minHeight: 28)
+                        .help(webViewService.isLoading ? "Stop Loading" : "Reload")
                     }
                 }
                 
@@ -102,36 +115,63 @@ struct MainWindowView: View {
                     HStack(spacing: 8) {
                         if let url = webViewService.currentURL {
                             Image(systemName: url.scheme == "https" ? "lock.fill" : "lock.open.fill")
-                                .font(.caption)
-                                .foregroundColor(url.scheme == "https" ? .green : .gray)
+                                .font(.system(size: 11))
+                                .foregroundColor(url.scheme == "https" ? .green : .secondary)
+                                .frame(width: 14)
                         }
                         
                         TextField("Search or enter address", text: $addressText)
                             .textFieldStyle(.plain)
+                            .focused($isAddressBarFocused)
                             .onSubmit {
                                 webViewService.load(urlString: addressText)
+                                isAddressBarFocused = false
                             }
                             .onChange(of: webViewService.currentURL) { _, newURL in
-                                if let url = newURL {
+                                if !isAddressBarFocused, let url = newURL {
+                                    if abbreviateURLs {
+                                        addressText = url.abbreviated()
+                                    } else {
+                                        addressText = url.absoluteString
+                                    }
+                                }
+                            }
+                            .onChange(of: isAddressBarFocused) { _, focused in
+                                if focused, let url = webViewService.currentURL {
                                     addressText = url.absoluteString
+                                } else if !focused, let url = webViewService.currentURL {
+                                    if abbreviateURLs {
+                                        addressText = url.abbreviated()
+                                    } else {
+                                        addressText = url.absoluteString
+                                    }
+                                }
+                            }
+                            .onChange(of: abbreviateURLs) { _, shouldAbbreviate in
+                                if !isAddressBarFocused, let url = webViewService.currentURL {
+                                    if shouldAbbreviate {
+                                        addressText = url.abbreviated()
+                                    } else {
+                                        addressText = url.absoluteString
+                                    }
                                 }
                             }
                     }
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(6)
-                    .frame(maxWidth: 600)
+                    .padding(.vertical, 8)
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .frame(minWidth: 400, maxWidth: .infinity)
                 }
             }
         }
+        .navigationSplitViewStyle(.balanced)
         .onKeyPress(KeyEquivalent("t"), modifiers: .command) {
             showOmnibox = true
             isOmniboxFocused = true
         }
         .onReceive(NotificationCenter.default.publisher(for: .toggleSidebar)) { _ in
             withAnimation(.easeInOut(duration: 0.25)) {
-                isSidebarCollapsed.toggle()
+                sidebarVisibility = sidebarVisibility == .doubleColumn ? .detailOnly : .doubleColumn
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .collapseTrail)) { _ in
@@ -145,7 +185,7 @@ struct MainWindowView: View {
             }
         }
         .onAppear {
-            webViewService.onLinkClick = { [trailManager, webViewService] url in
+            webViewService.onLinkClick = { [trailManager] url in
                 guard let trail = self.selectedTrail else { return }
                 let newPage = trailManager.createPage(trail: trail, url: url, title: url.absoluteString)
                 DispatchQueue.main.async {
@@ -169,7 +209,11 @@ struct MainWindowView: View {
             }
             
             if let url = webViewService.currentURL {
-                addressText = url.absoluteString
+                if abbreviateURLs {
+                    addressText = url.abbreviated()
+                } else {
+                    addressText = url.absoluteString
+                }
             }
         }
     }

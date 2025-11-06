@@ -123,6 +123,8 @@ struct GeneralSettingsView: View {
 }
 
 struct AppearanceSettingsView: View {
+    @AppStorage("abbreviateURLs") private var abbreviateURLs = true
+    
     var body: some View {
         Form {
             VStack(alignment: .leading, spacing: 24) {
@@ -140,6 +142,14 @@ struct AppearanceSettingsView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Interface")
                             .font(.headline)
+                        
+                        Toggle("Abbreviate URLs in address bar", isOn: $abbreviateURLs)
+                        
+                        Text("When enabled, long URLs will be shortened to show only the domain and last path segment")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Divider()
                         
                         Text("The Brie browser uses your system appearance settings")
                             .font(.subheadline)

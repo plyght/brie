@@ -52,12 +52,7 @@ struct FloatingOmniboxView: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
-            )
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             .shadow(color: Color.black.opacity(0.2), radius: 24, x: 0, y: 10)
             .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
             .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
@@ -70,14 +65,7 @@ struct FloatingOmniboxView: View {
                         }
                     }
                 }
-                .background(.ultraThinMaterial)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
-                )
-                .shadow(color: Color.black.opacity(0.2), radius: 24, x: 0, y: 10)
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 0, y: 4)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.top, 8)
             }
         }

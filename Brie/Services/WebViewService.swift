@@ -47,45 +47,48 @@ class WebViewService: NSObject, ObservableObject {
         observations.removeAll()
         
         webView.publisher(for: \.canGoBack)
-            .sink { [weak self] value in
-                self?.canGoBack = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .assign(to: \.canGoBack, on: self)
             .store(in: &observations)
         
         webView.publisher(for: \.canGoForward)
-            .sink { [weak self] value in
-                self?.canGoForward = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .assign(to: \.canGoForward, on: self)
             .store(in: &observations)
         
         webView.publisher(for: \.isLoading)
-            .sink { [weak self] value in
-                self?.isLoading = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .assign(to: \.isLoading, on: self)
             .store(in: &observations)
         
         webView.publisher(for: \.url)
-            .sink { [weak self] value in
-                self?.currentURL = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .compactMap { $0 }
+            .assign(to: \.currentURL, on: self)
             .store(in: &observations)
         
         webView.publisher(for: \.title)
-            .sink { [weak self] value in
-                self?.currentTitle = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .assign(to: \.currentTitle, on: self)
             .store(in: &observations)
         
         webView.publisher(for: \.estimatedProgress)
-            .sink { [weak self] value in
-                self?.estimatedProgress = value
-            }
+            .debounce(for: .milliseconds(10), scheduler: RunLoop.main)
+            .receive(on: RunLoop.main)
+            .assign(to: \.estimatedProgress, on: self)
             .store(in: &observations)
     }
     
     deinit {
         observations.removeAll()
-        webView?.navigationDelegate = nil
+        Task { @MainActor [weak webView] in
+            webView?.navigationDelegate = nil
+        }
     }
     
     func load(url: URL) {
@@ -116,38 +119,38 @@ class WebViewService: NSObject, ObservableObject {
 }
 
 extension WebViewService: WKNavigationDelegate {
+    @MainActor
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        isLoading = true
+        self.isLoading = true
         if let url = webView.url {
-            currentURL = url
+            self.currentURL = url
         }
     }
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        isLoading = false
-        DispatchQueue.main.async { [weak self] in
-            self?.currentURL = webView.url
-            self?.currentTitle = webView.title
-        }
+        self.isLoading = false
+        self.currentURL = webView.url
+        self.currentTitle = webView.title
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        isLoading = false
+        self.isLoading = false
         print("Navigation failed: \(error.localizedDescription)")
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        isLoading = false
+        self.isLoading = false
         print("Provisional navigation failed: \(error.localizedDescription)")
     }
     
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         if let url = webView.url {
-            currentURL = url
+            self.currentURL = url
         }
     }
     
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    @MainActor
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         if navigationAction.targetFrame == nil {
             webView.load(navigationAction.request)
         }
@@ -155,22 +158,26 @@ extension WebViewService: WKNavigationDelegate {
         if navigationAction.navigationType == .linkActivated,
            let url = navigationAction.request.url {
             if navigationAction.modifierFlags.contains(.command) {
-                onCommandClick?(url)
-                decisionHandler(.cancel)
+                self.onCommandClick?(url)
+                decisionHandler(.cancel, preferences)
                 return
             } else {
-                onLinkClick?(url)
+                self.onLinkClick?(url)
             }
         }
         
-        decisionHandler(.allow)
+        preferences.allowsContentJavaScript = true
+        decisionHandler(.allow, preferences)
     }
 }
 
 extension WebViewService: WKScriptMessageHandler {
     nonisolated func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == "contextMenuHandler",
-              let body = message.body as? [String: Any],
+        let messageName = message.name
+        let messageBody = message.body
+        
+        guard messageName == "contextMenuHandler",
+              let body = messageBody as? [String: Any],
               let urlString = body["url"] as? String,
               let url = URL(string: urlString) else {
             return
@@ -216,9 +223,10 @@ extension WebViewService: WKScriptMessageHandler {
 }
 
 extension WebViewService: WKUIDelegate {
+    @MainActor
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
         let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host ?? "Alert"
+        alert.messageText = frame.securityOrigin.host
         alert.informativeText = message
         alert.addButton(withTitle: "OK")
         alert.alertStyle = .informational
@@ -226,9 +234,10 @@ extension WebViewService: WKUIDelegate {
         completionHandler()
     }
     
+    @MainActor
     func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
         let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host ?? "Confirm"
+        alert.messageText = frame.securityOrigin.host
         alert.informativeText = message
         alert.addButton(withTitle: "OK")
         alert.addButton(withTitle: "Cancel")
@@ -237,9 +246,10 @@ extension WebViewService: WKUIDelegate {
         completionHandler(response == .alertFirstButtonReturn)
     }
     
+    @MainActor
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
         let alert = NSAlert()
-        alert.messageText = frame.securityOrigin.host ?? "Input"
+        alert.messageText = frame.securityOrigin.host
         alert.informativeText = prompt
         alert.addButton(withTitle: "OK")
         alert.addButton(withTitle: "Cancel")

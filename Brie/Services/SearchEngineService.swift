@@ -55,7 +55,7 @@ class SearchEngineService: ObservableObject {
     func generateSearchResults(query: String) -> [SearchResult] {
         var results: [SearchResult] = []
         
-        if let url = query.toURL() {
+        if query.toURL() != nil {
             results.append(SearchResult(
                 title: "Open URL",
                 url: query,

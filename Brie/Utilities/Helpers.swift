@@ -22,6 +22,36 @@ extension String {
     }
 }
 
+extension URL {
+    func abbreviated() -> String {
+        guard let host = self.host else {
+            return self.absoluteString
+        }
+        
+        let path = self.path
+        
+        if path.isEmpty || path == "/" {
+            return host
+        }
+        
+        let pathComponents = path.split(separator: "/").map(String.init)
+        
+        if pathComponents.count <= 1 {
+            return host + path
+        }
+        
+        if pathComponents.count == 2 {
+            return host + path
+        }
+        
+        if let lastComponent = pathComponents.last {
+            return "\(host)/…/\(lastComponent)"
+        }
+        
+        return host + path
+    }
+}
+
 extension View {
     func hideKeyboardShortcutLabel() -> some View {
         self.keyboardShortcut(KeyEquivalent("\0"), modifiers: [])
