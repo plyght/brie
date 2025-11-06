@@ -9,11 +9,10 @@ struct MainWindowView: View {
     @State private var selectedPage: Page?
     @State private var sidebarVisibility: NavigationSplitViewVisibility = .automatic
     @State private var currentURL: URL?
-    @State private var addressText: String = ""
     @State private var showOmnibox: Bool = false
+    @State private var searchText: String = ""
     @FocusState private var isOmniboxFocused: Bool
-    @FocusState private var isAddressBarFocused: Bool
-    @AppStorage("abbreviateURLs") private var abbreviateURLs = true
+    @FocusState private var isSearchFocused: Bool
     
     var body: some View {
         NavigationSplitView(columnVisibility: $sidebarVisibility) {
@@ -112,55 +111,20 @@ struct MainWindowView: View {
                 }
                 
                 ToolbarItem(placement: .principal) {
-                    HStack(spacing: 8) {
-                        if let url = webViewService.currentURL {
-                            Image(systemName: url.scheme == "https" ? "lock.fill" : "lock.open.fill")
-                                .font(.system(size: 11))
-                                .foregroundColor(url.scheme == "https" ? .green : .secondary)
-                                .frame(width: 14)
+                    TextField("Search or enter address", text: $searchText)
+                        .textFieldStyle(.plain)
+                        .focused($isSearchFocused)
+                        .onSubmit {
+                            webViewService.load(urlString: searchText)
                         }
-                        
-                        TextField("Search or enter address", text: $addressText)
-                            .textFieldStyle(.plain)
-                            .focused($isAddressBarFocused)
-                            .onSubmit {
-                                webViewService.load(urlString: addressText)
-                                isAddressBarFocused = false
-                            }
-                            .onChange(of: webViewService.currentURL) { _, newURL in
-                                if !isAddressBarFocused, let url = newURL {
-                                    if abbreviateURLs {
-                                        addressText = url.abbreviated()
-                                    } else {
-                                        addressText = url.absoluteString
-                                    }
-                                }
-                            }
-                            .onChange(of: isAddressBarFocused) { _, focused in
-                                if focused, let url = webViewService.currentURL {
-                                    addressText = url.absoluteString
-                                } else if !focused, let url = webViewService.currentURL {
-                                    if abbreviateURLs {
-                                        addressText = url.abbreviated()
-                                    } else {
-                                        addressText = url.absoluteString
-                                    }
-                                }
-                            }
-                            .onChange(of: abbreviateURLs) { _, shouldAbbreviate in
-                                if !isAddressBarFocused, let url = webViewService.currentURL {
-                                    if shouldAbbreviate {
-                                        addressText = url.abbreviated()
-                                    } else {
-                                        addressText = url.absoluteString
-                                    }
-                                }
-                            }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .frame(minWidth: 400, maxWidth: .infinity)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .frame(minWidth: 400, maxWidth: .infinity)
+                }
+            }
+            .onChange(of: webViewService.currentURL) { _, newURL in
+                if let url = newURL, !isSearchFocused {
+                    searchText = url.absoluteString
                 }
             }
         }
@@ -204,16 +168,12 @@ struct MainWindowView: View {
                 if let url = URL(string: "https://www.google.com") {
                     currentURL = url
                     webViewService.load(url: url)
-                    addressText = url.absoluteString
+                    searchText = url.absoluteString
                 }
             }
             
-            if let url = webViewService.currentURL {
-                if abbreviateURLs {
-                    addressText = url.abbreviated()
-                } else {
-                    addressText = url.absoluteString
-                }
+            if let url = webViewService.currentURL, searchText.isEmpty {
+                searchText = url.absoluteString
             }
         }
     }

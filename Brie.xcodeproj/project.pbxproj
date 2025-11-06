@@ -17,7 +17,6 @@
 		SearchEngineService /* SearchEngineService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SearchEngineServiceFile; };
 		WebViewService /* WebViewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = WebViewServiceFile; };
 		MainWindowView /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MainWindowViewFile; };
-		BrowserAddressBar /* BrowserAddressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserAddressBarFile; };
 		BrowserToolbar /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserToolbarFile; };
 		BrowserView /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BrowserViewFile; };
 		FloatingOmniboxView /* FloatingOmniboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FloatingOmniboxViewFile; };
@@ -53,7 +52,6 @@
 		SearchEngineServiceFile /* SearchEngineService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEngineService.swift; sourceTree = "<group>"; };
 		WebViewServiceFile /* WebViewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewService.swift; sourceTree = "<group>"; };
 		MainWindowViewFile /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
-		BrowserAddressBarFile /* BrowserAddressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserAddressBar.swift; sourceTree = "<group>"; };
 		BrowserToolbarFile /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		BrowserViewFile /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
 		FloatingOmniboxViewFile /* FloatingOmniboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingOmniboxView.swift; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 		ContentGroup /* Content */ = {
 			isa = PBXGroup;
 			children = (
-				BrowserAddressBarFile /* BrowserAddressBar.swift */,
 				BrowserToolbarFile /* BrowserToolbar.swift */,
 				BrowserViewFile /* BrowserView.swift */,
 				FloatingOmniboxViewFile /* FloatingOmniboxView.swift */,
@@ -308,7 +305,6 @@
 				SearchEngineService,
 				WebViewService,
 				MainWindowView,
-				BrowserAddressBar,
 				BrowserToolbar,
 				BrowserView,
 				FloatingOmniboxView,
